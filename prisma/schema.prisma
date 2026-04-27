@@ -9,33 +9,33 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model cartao_ferramenta {
-  id            Int         @id @default(autoincrement())
-  codigo_uid    String?     @db.VarChar(100)
-  ativo         Boolean?
-  ferramenta_id Int?
-  ferramenta    ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id            Int        @id @default(autoincrement())
+  codigo_uid    String     @db.VarChar(100)
+  ativo         Boolean
+  ferramenta_id Int
+  ferramenta    ferramenta @relation(fields: [ferramenta_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model cartao_operador {
-  id           Int       @id @default(autoincrement())
-  codigo_uid   String?   @db.VarChar(100)
-  ativo        Boolean?
-  cpf_operador String?   @db.VarChar(11)
-  operador     operador? @relation(fields: [cpf_operador], references: [cpf], onDelete: Cascade, onUpdate: NoAction)
+  id           Int      @id @default(autoincrement())
+  codigo_uid   String   @db.VarChar(100)
+  ativo        Boolean
+  cpf_operador String   @db.VarChar(11)
+  operador     operador @relation(fields: [cpf_operador], references: [cpf], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model emprestimo {
-  id             Int         @id @default(autoincrement())
-  operador_cpf   String?     @db.VarChar(11)
-  ferramenta_id  Int?
-  data_retirada  DateTime?   @db.Timestamp(6)
-  data_devolucao DateTime?   @db.Timestamp(6)
-  status         String?     @db.VarChar(20)
-  ferramenta     ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  operador       operador?   @relation(fields: [operador_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
+  id            Int        @id @default(autoincrement())
+  operador_cpf  String     @db.VarChar(11)
+  ferramenta_id Int
+  data_retirada DateTime?  @default(now()) @db.Timestamp(6)
+  status        String?    @db.VarChar(20)
+  devolucao     devolucao?
+  ferramenta    ferramenta @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  operador      operador   @relation(fields: [operador_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -46,8 +46,9 @@ model estoque {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ferramenta {
   id                 Int                  @id @default(autoincrement())
-  tipo               String?              @db.VarChar(50)
+  tipo               String               @db.VarChar(50)
   cartao_ferramenta  cartao_ferramenta[]
+  devolucao          devolucao[]
   emprestimo         emprestimo[]
   ferramenta_estoque ferramenta_estoque[]
 }
@@ -57,8 +58,8 @@ model ferramenta_estoque {
   id            Int        @id @default(autoincrement())
   ferramenta_id Int
   quantidade    Int?       @default(0)
-  status_saude  String?    @db.VarChar(50)
-  localizacao   String?    @db.VarChar(50)
+  status_saude  String     @db.VarChar(50)
+  localizacao   String     @db.VarChar(50)
   ferramenta    ferramenta @relation(fields: [ferramenta_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
@@ -66,16 +67,17 @@ model ferramenta_estoque {
 model leitura_nfc {
   id        Int       @id @default(autoincrement())
   data_hora DateTime? @default(now()) @db.Timestamp(6)
-  uid_lido  String?   @db.VarChar(100)
-  sensor_id Int?
-  sensor    sensor?   @relation(fields: [sensor_id], references: [id], onUpdate: NoAction)
+  uid_lido  String    @db.VarChar(100)
+  sensor_id Int
+  sensor    sensor    @relation(fields: [sensor_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model operador {
   cpf             String            @id @db.VarChar(11)
-  setor           String?           @db.VarChar(50)
+  setor           String            @db.VarChar(50)
   cartao_operador cartao_operador[]
+  devolucao       devolucao[]
   emprestimo      emprestimo[]
   usuario         usuario           @relation(fields: [cpf], references: [cpf], onDelete: Cascade, onUpdate: NoAction)
 }
@@ -83,8 +85,8 @@ model operador {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model sensor {
   id          Int           @id @default(autoincrement())
-  tipo        String?       @db.VarChar(50)
-  medida      String?       @db.VarChar(50)
+  tipo        String        @db.VarChar(50)
+  medida      String        @db.VarChar(50)
   leitura_nfc leitura_nfc[]
 }
 
@@ -95,4 +97,18 @@ model usuario {
   nome     String    @db.VarChar(100)
   tipo     String    @db.VarChar(20)
   operador operador?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model devolucao {
+  id             Int         @id @default(autoincrement())
+  operador_cpf   String      @db.VarChar(11)
+  emprestimo_id  Int         @unique
+  status         String?     @db.VarChar(20)
+  data_devolucao DateTime?   @default(now()) @db.Timestamp(6)
+  ferramenta_id  Int?
+  emprestimo     emprestimo  @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ferramenta     ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  operador       operador    @relation(fields: [operador_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
 }

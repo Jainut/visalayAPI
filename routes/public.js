@@ -4,7 +4,7 @@ import express from 'express'; // Importando a tal da bibliotaca principal
 const router = express.Router(); // Usando só o básico pra criar rota mesmo
 const prisma = new PrismaClient(); // Criando uma instância do Prisma Client pra usar depois
 
-router.post('/registrarEmprestimo', async (req, res) => { // Rota pra registrar empréstimo usando postzão
+router.post('/registrar/Emprestimo', async (req, res) => { // Rota pra registrar empréstimo usando postzão
   const emprestimo = req.body;
 
   try { // Vai tentar, se der ruim, cai no catch
@@ -12,8 +12,7 @@ router.post('/registrarEmprestimo', async (req, res) => { // Rota pra registrar 
       data: {
       operador_cpf: emprestimo.operador_cpf,
       ferramenta_id: emprestimo.ferramenta_id,
-      data_retirada: emprestimo.data_retirada,
-      data_devolucao: emprestimo.data_devolucao,
+      status: 'Emprestado', // Aqui a gente já marca como emprestado, porque é isso que tá acontecendo
       }
     });
 
@@ -24,14 +23,17 @@ router.post('/registrarEmprestimo', async (req, res) => { // Rota pra registrar 
   }
 });
 
-router.post('/registrarDevolucao', async (req, res) => {
+router.post('/registrar/Devolucao', async (req, res) => {
   const devolucao = req.body;
 
   try { // Vai tentar, se der ruim, cai no catch
-    const newDevolucao = await prisma.emprestimo.create({
-      id: devolucao.id,
-      ferramenta: devolucao.ferramenta,
-      operador: devolucao.operador,
+    const newDevolucao = await prisma.devolucao.create({
+      data: {
+      operador_cpf: devolucao.operador_cpf,
+      emprestimo_id: devolucao.emprestimo_id,
+      ferramenta_id: devolucao.ferramenta_id,
+      status: 'Devolvido', // Aqui a gente já marca como devolvido, porque é isso que tá acontecendo
+      }
     });
 
     return res.status(201).json({message: 'Devolução registrada com sucesso'});
