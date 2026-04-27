@@ -1,15 +1,20 @@
+import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra falar com o banco de dados
 import express from 'express'; // Importando a tal da bibliotaca principal
 
 const router = express.Router(); // Usando só o básico pra criar rota mesmo
+const prisma = new PrismaClient(); // Criando uma instância do Prisma Client pra usar depois
 
 router.post('/registrarEmprestimo', async (req, res) => { // Rota pra registrar empréstimo usando postzão
   const emprestimo = req.body;
 
   try { // Vai tentar, se der ruim, cai no catch
     const newEmprestimo = await prisma.emprestimo.create({ // Olha que maravilha a API mandando só o basico fi
-      id: emprestimo.id,
-      ferramenta: emprestimo.ferramenta,
-      operador: emprestimo.operador,
+      data: {
+      operador_cpf: emprestimo.operador_cpf,
+      ferramenta_id: emprestimo.ferramenta_id,
+      data_retirada: emprestimo.data_retirada,
+      data_devolucao: emprestimo.data_devolucao,
+      }
     });
 
     return res.status(201).json({message: 'Empréstimo registrado com sucesso'});
