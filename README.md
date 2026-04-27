@@ -4,8 +4,8 @@ ts API is for my final project (AKA TCC)
 
 ## Routes
 
-- /registrarEmprestimo
-- /registrarDevolucao
+- /registrar/Emprestimo
+- /registrar/Devolucao
 
 ## Technologies
 
@@ -13,7 +13,3 @@ ts API is for my final project (AKA TCC)
 - Node
 - Express
 - Prisma
-- MY COMPUTER
-- MY MIND
-- ME
-- INTERNET
