@@ -6,6 +6,8 @@ ts API is for my final project (AKA TCC)
 
 - /registrar/Emprestimo
 - /registrar/Devolucao
+- /registrar/Usuario
+- /registrar/Operador
 
 ## Technologies
 
