@@ -41,8 +41,46 @@ router.post('/registrar/Devolucao', async (req, res) => {
     console.error('Erro ao registrar devolução:', error);
     res.status(500).json({ message: 'Erro ao registrar devolução' });
   }
-}); /* OBS: Essa rota vai ser igual a de empréstimo porque tem que passar as mesmas infos. Provavelmente o resto do trabalho vai ficar todo pra quem fizer o DB,
-    mas isso é com eles, eu só faço a API, então tá tudo certo */
+});
+
+router.post('/registrar/Operador', async (req, res) => { // Rota de registro de operador, sem muita ideinha
+  const operador = req.body;
+
+  try {
+    const newoperador = await prisma.operador.create({
+      data: {
+        cpf: operador.cpf,
+        setor: operador.setor,
+        }
+    });
+
+    return res.status(201).json({ message: 'Operador registrado com sucesso' });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao registrar operador' });
+  }
+});
+
+router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de usuário porque nós é bom mai num é bombom
+  const usuario = req.body;
+
+  try {
+    const newUsuario = await prisma.usuario.create({
+      data: {
+        cpf: usuario.cpf,
+        nome: usuario.nome,
+        tipo: usuario.tipo,
+      }
+    });
+
+    return res.status(201).json({ message: 'Usuário registrado com sucesso' });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao registrar usuário' });
+  }
+});
 
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
