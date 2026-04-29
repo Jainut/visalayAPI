@@ -84,8 +84,13 @@ router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de u
 
 router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os empréstimos, usando getzão
   try {
-    const emprestimos = await prisma.emprestimo.findMany(); // Vai buscar tudo que tem na tabela de empréstimos
-    res.json(emprestimos);
+    const emprestimos = await prisma.emprestimo.findMany({
+      select: {
+        id: true,
+      }
+    });
+  
+    res.json(empMapeado);
   } catch (err) {
     res.status(500).json({ message: 'Erro ao listar empréstimos'});
   }
@@ -93,9 +98,43 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
 
 router.get('/listar/Devolucoes', async (req,res) => { // Rota pra listar devoluções, topzera
   try {
-    const devolucoes = await prisma.devolucao.findMany(); // Vai buscar tudo que tem na tabela de devoluções
-    res.json(devolucoes);
+    const devolucoes = await prisma.devolucao.findMany({
+      select: {
+        id: true,
+        emprestimo_id: true,
+        status: true,
+        data_devolucao: true,
+        operador: {
+          select: {
+          setor: true,
+            usuario: {
+              select: {
+                nome: true
+              }
+            }
+          }
+        },
+        ferramenta: {
+          select: {
+            tipo: true
+        }
+      }
+    }
+  });
+
+    const devMapeado = devolucoes.map(dev => ({
+      devolucao_id: dev.id,
+      emprestimo_id: dev.emprestimo_id,
+      status: dev.status,
+      data_devolucao: dev.data_devolucao,
+      tipo_ferramenta: dev.ferramenta.tipo,
+      setor_operador: dev.operador.setor,
+      nome_operador: dev.operador.usuario.nome,
+    }));
+
+    res.json(devMapeado);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: 'Erro ao listar devoluções'});
   }
 });
