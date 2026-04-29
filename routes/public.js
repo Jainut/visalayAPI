@@ -87,8 +87,34 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
     const emprestimos = await prisma.emprestimo.findMany({
       select: {
         id: true,
+        data_retirada: true,
+        status: true,
+        operador: {
+          select: {
+            setor: true,
+            usuario: {
+              select: {
+                nome: true
+              }
+            }
+          }
+        },
+        ferramenta: {
+          select: {
+            tipo: true
+        }
       }
-    });
+    }
+  });
+
+  const empMapeado = emprestimos.map(emp => ({
+      emprestimo_id: emp.id,
+      data_retirada: emp.data_retirada,
+      ferramenta_status: emp.status,
+      setor_operador: emp.operador.setor,
+      nome_operador: emp.operador.usuario.nome,
+      tipo_ferramenta: emp.ferramenta.tipo,
+  }));
   
     res.json(empMapeado);
   } catch (err) {
