@@ -82,6 +82,15 @@ router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de u
   }
 });
 
+router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os empréstimos, usando getzão
+  try {
+    const emprestimos = await prisma.emprestimo.findMany(); // Vai buscar tudo que tem na tabela de empréstimos
+    res.json(emprestimos);
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao listar empréstimos'});
+  }
+});
+
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
 // OBS: Mais umas 200 linhas eu não vou mais tar entendo como essa bomba tá rodando
