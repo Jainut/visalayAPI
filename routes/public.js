@@ -91,7 +91,7 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
   }
 });
 
-router.get('/listar/Devolucoes', async (req,res) => {
+router.get('/listar/Devolucoes', async (req,res) => { // Rota pra listar devoluções, topzera
   try {
     const devolucoes = await prisma.devolucao.findMany(); // Vai buscar tudo que tem na tabela de devoluções
     res.json(devolucoes);
@@ -102,4 +102,4 @@ router.get('/listar/Devolucoes', async (req,res) => {
 
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
-// OBS: Mais umas 200 linhas eu não vou mais tar entendo como essa bomba tá rodando
+// OBS: Mais umas 200 linhas eu não vou mais tar entendendo como essa bomba tá rodando
