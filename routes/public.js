@@ -91,6 +91,15 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
   }
 });
 
+router.get('/listar/Devolucoes', async (req,res) => {
+  try {
+    const devolucoes = await prisma.devolucao.findMany(); // Vai buscar tudo que tem na tabela de devoluções
+    res.json(devolucoes);
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao listar devoluções'});
+  }
+});
+
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
 // OBS: Mais umas 200 linhas eu não vou mais tar entendo como essa bomba tá rodando
